@@ -36,7 +36,7 @@ Dieses Repository enthält zwei vollständige Systeme für Roblox-Spiele: Ein Ad
 2. Kopiere den Inhalt von `Server/admin.lua`
 3. **WICHTIG**: Ändere die `OWNER_ID` in Zeile 8 zu deiner eigenen Roblox User-ID
    ```lua
-   local OWNER_ID = 9847285927 -- <--- DEINE USER ID HIER EINTRAGEN
+   local OWNER_ID = 0000000000 -- <--- DEINE USER ID HIER EINTRAGEN
    ```
 
 #### Client-Script (admin_client.lua)
