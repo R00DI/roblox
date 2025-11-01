@@ -171,14 +171,38 @@ end)
 
 untimeoutPlayer.OnServerEvent:Connect(function(player, targetName:string)
 	if not isAdmin(player) then return end
+	
+	-- Erst versuchen online Spieler zu finden
 	local target = findPlayerByPrefix(targetName)
 	if target and target.UserId ~= OWNER_ID then
 		local uid = tostring(target.UserId)
 		if timebannedPlayers[uid] then
 			timebannedPlayers[uid] = nil
 			saveTimebans()
+			print(player.Name .. " hat Timeban für " .. target.Name .. " (online) aufgehoben")
+		end
+		return
+	end
+	
+	-- Falls nicht online, nach UserId in timebannedPlayers suchen
+	local targetName_lower = targetName:lower()
+	for uid, expireTime in pairs(timebannedPlayers) do
+		-- Versuche UserId direkt zu matchen oder über Players Service
+		local userId = tonumber(uid)
+		if userId then
+			local success, username = pcall(function()
+				return Players:GetNameFromUserIdAsync(userId)
+			end)
+			if success and username and username:lower():sub(1, #targetName_lower) == targetName_lower then
+				timebannedPlayers[uid] = nil
+				saveTimebans()
+				print(player.Name .. " hat Timeban für " .. username .. " (offline) aufgehoben")
+				return
+			end
 		end
 	end
+	
+	print("Timeban aufheben fehlgeschlagen: Spieler '" .. targetName .. "' nicht gefunden oder nicht getimebannt")
 end)
 
 banPlayer.OnServerEvent:Connect(function(player, targetName:string)
@@ -193,14 +217,40 @@ end)
 
 unbanPlayer.OnServerEvent:Connect(function(player, targetName:string)
 	if not isAdmin(player) then return end
+	
+	-- Erst versuchen online Spieler zu finden
 	local target = findPlayerByPrefix(targetName)
 	if target then
 		local uid = tostring(target.UserId)
 		if bannedPlayers[uid] then
 			bannedPlayers[uid] = nil
 			saveBans()
+			print(player.Name .. " hat Permaban für " .. target.Name .. " (online) aufgehoben")
+		end
+		return
+	end
+	
+	-- Falls nicht online, nach UserId in bannedPlayers suchen
+	local targetName_lower = targetName:lower()
+	for uid, banned in pairs(bannedPlayers) do
+		if banned then
+			-- Versuche UserId direkt zu matchen oder über Players Service
+			local userId = tonumber(uid)
+			if userId then
+				local success, username = pcall(function()
+					return Players:GetNameFromUserIdAsync(userId)
+				end)
+				if success and username and username:lower():sub(1, #targetName_lower) == targetName_lower then
+					bannedPlayers[uid] = nil
+					saveBans()
+					print(player.Name .. " hat Permaban für " .. username .. " (offline) aufgehoben")
+					return
+				end
+			end
 		end
 	end
+	
+	print("Permaban aufheben fehlgeschlagen: Spieler '" .. targetName .. "' nicht gefunden oder nicht gebannt")
 end)
 
 setAdmin.OnServerEvent:Connect(function(player, targetName:string, status:boolean)
