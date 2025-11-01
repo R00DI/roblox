@@ -1,4 +1,4 @@
---ownerid= 9847285927
+
 
 --!strict
 local Players = game:GetService("Players")
@@ -7,7 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 
 -- Owner-UserId eintragen
-local OWNER_ID = 9847285927 -- <--- DEINE USER ID
+local OWNER_ID = 0000000000 -- <--- DEINE USER ID
 
 -- DataStores
 local adminDataStore = DataStoreService:GetDataStore("AdminData_v2")
